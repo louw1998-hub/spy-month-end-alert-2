@@ -10,16 +10,17 @@ spy = yf.download(
     progress=False
 )
 
-# Closing prices
+# Get close prices
 close = spy["Close"].dropna()
 
-latest_close = float(close.iloc[-1])
-sma200 = float(close.tail(200).mean())
+# Latest values
+latest_close = close.iloc[-1].item()
+sma200 = close.tail(200).mean().item()
 
 # Latest trading day
 latest_market_day = close.index[-1]
 
-# Check if this is month-end
+# Detect final trading day of month
 is_month_end = (
     latest_market_day.month !=
     (latest_market_day + pd.Timedelta(days=1)).month
@@ -29,7 +30,7 @@ print(f"SPY Close: {latest_close:.2f}")
 print(f"200 SMA: {sma200:.2f}")
 print(f"Is Month End: {is_month_end}")
 
-# Trigger GitHub notification by failing workflow
+# Trigger alert by failing workflow
 if is_month_end and latest_close < sma200:
 
     raise Exception(
